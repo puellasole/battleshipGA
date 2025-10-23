@@ -3,24 +3,24 @@ package battleshipGA;
 import java.util.*;
 
 public class BattleshipGA {
-    // Размер поля
+    // Р Р°Р·РјРµСЂ РїРѕР»СЏ
     private static final int BOARD_SIZE = 8;
-    // Корабли: количество и их размеры
+    // РљРѕСЂР°Р±Р»Рё: РєРѕР»РёС‡РµСЃС‚РІРѕ Рё РёС… СЂР°Р·РјРµСЂС‹
     private static final int[] SHIP_SIZES = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1};
-    // Параметры генетического алгоритма
+    // РџР°СЂР°РјРµС‚СЂС‹ РіРµРЅРµС‚РёС‡РµСЃРєРѕРіРѕ Р°Р»РіРѕСЂРёС‚РјР°
     private static final int POPULATION_SIZE = 100;
     private static final int MAX_GENERATIONS = 1000;
     private static final double MUTATION_RATE = 0.1;
     private static final int TOURNAMENT_SIZE = 5;
     private static final double ELITISM_RATE = 0.1;
 
-    // Представление особи (расстановки кораблей)
+    // РџСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕСЃРѕР±Рё (СЂР°СЃСЃС‚Р°РЅРѕРІРєРё РєРѕСЂР°Р±Р»РµР№)
     static class Individual {
         List<Ship> ships = new ArrayList<>();
         int fitness;
 
         Individual() {
-            // Случайная инициализация
+            // РЎР»СѓС‡Р°Р№РЅР°СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             for (int size : SHIP_SIZES) {
                 ships.add(createRandomShip(size));
             }
@@ -32,15 +32,15 @@ public class BattleshipGA {
             calculateFitness();
         }
 
-        // Создание случайного корабля
+        // РЎРѕР·РґР°РЅРёРµ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
         private Ship createRandomShip(int size) {
             Random rand = new Random();
             boolean isHorizontal = rand.nextBoolean();
             int x, y;
             
             if (isHorizontal) {
-            	//как заранее понимать эти ограничения?
-            	//+1 это начало корабля, без него это была бы предыдущая клетка 
+            	//РєР°Рє Р·Р°СЂР°РЅРµРµ РїРѕРЅРёРјР°С‚СЊ СЌС‚Рё РѕРіСЂР°РЅРёС‡РµРЅРёСЏ?
+            	//+1 СЌС‚Рѕ РЅР°С‡Р°Р»Рѕ РєРѕСЂР°Р±Р»СЏ, Р±РµР· РЅРµРіРѕ СЌС‚Рѕ Р±С‹Р»Р° Р±С‹ РїСЂРµРґС‹РґСѓС‰Р°СЏ РєР»РµС‚РєР° 
                 x = rand.nextInt(BOARD_SIZE - size + 1);
                 y = rand.nextInt(BOARD_SIZE);
             } else {
@@ -51,29 +51,29 @@ public class BattleshipGA {
             return new Ship(x, y, size, isHorizontal);
         }
 
-        // Вычисление приспособленности (меньше значение = лучше)
+        // Р’С‹С‡РёСЃР»РµРЅРёРµ РїСЂРёСЃРїРѕСЃРѕР±Р»РµРЅРЅРѕСЃС‚Рё (РјРµРЅСЊС€Рµ Р·РЅР°С‡РµРЅРёРµ = Р»СѓС‡С€Рµ)
         void calculateFitness() {
-            // Штраф за пересечения кораблей
+            // РЁС‚СЂР°С„ Р·Р° РїРµСЂРµСЃРµС‡РµРЅРёСЏ РєРѕСЂР°Р±Р»РµР№
             int overlapPenalty = calculateOverlaps() * 100;
             
-            // Штраф за выход за границы
+            // РЁС‚СЂР°С„ Р·Р° РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹
             int outOfBoundsPenalty = calculateOutOfBounds() * 50;
             
-            // Штраф за соприкосновение кораблей
+            // РЁС‚СЂР°С„ Р·Р° СЃРѕРїСЂРёРєРѕСЃРЅРѕРІРµРЅРёРµ РєРѕСЂР°Р±Р»РµР№
             int adjacencyPenalty = calculateAdjacentShips() * 10;
             
             this.fitness = overlapPenalty + outOfBoundsPenalty + adjacencyPenalty;
         }
 
-        // Подсчет пересечений кораблей
+        // РџРѕРґСЃС‡РµС‚ РїРµСЂРµСЃРµС‡РµРЅРёР№ РєРѕСЂР°Р±Р»РµР№
         private int calculateOverlaps() {
             Set<String> occupied = new HashSet<>();
             int overlaps = 0;
             
             for (Ship ship : ships) {
                 for (int i = 0; i < ship.size; i++) {
-                	//если горизонтальный - инкрементируем по иксу
-                	//вертикальный - по игреку
+                	//РµСЃР»Рё РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ - РёРЅРєСЂРµРјРµРЅС‚РёСЂСѓРµРј РїРѕ РёРєСЃСѓ
+                	//РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ - РїРѕ РёРіСЂРµРєСѓ
                     int x = ship.isHorizontal ? ship.x + i : ship.x;
                     int y = ship.isHorizontal ? ship.y : ship.y + i;
                     String key = x + "," + y;
@@ -87,43 +87,43 @@ public class BattleshipGA {
             return overlaps;
         }
 
-        // Подсчет клеток за пределами доски
+        // РџРѕРґСЃС‡РµС‚ РєР»РµС‚РѕРє Р·Р° РїСЂРµРґРµР»Р°РјРё РґРѕСЃРєРё
         private int calculateOutOfBounds() {
             int outOfBounds = 0;
             
             for (Ship ship : ships) {
-            	//эту добавленную клетку надо потом отнять?
+            	//СЌС‚Сѓ РґРѕР±Р°РІР»РµРЅРЅСѓСЋ РєР»РµС‚РєСѓ РЅР°РґРѕ РїРѕС‚РѕРј РѕС‚РЅСЏС‚СЊ?
                 int endX = ship.isHorizontal ? ship.x + ship.size - 1 : ship.x;
                 int endY = ship.isHorizontal ? ship.y : ship.y + ship.size - 1;
                 
                 if (endX >= BOARD_SIZE || endY >= BOARD_SIZE) {
-                	//почему штраф равен всему размеру а не части которая выходит
-                	//выходящий корабль полностью невалиден + ускорение алгоритма
-                	//алгоритм может терпеть частично валидные корабли?
+                	//РїРѕС‡РµРјСѓ С€С‚СЂР°С„ СЂР°РІРµРЅ РІСЃРµРјСѓ СЂР°Р·РјРµСЂСѓ Р° РЅРµ С‡Р°СЃС‚Рё РєРѕС‚РѕСЂР°СЏ РІС‹С…РѕРґРёС‚
+                	//РІС‹С…РѕРґСЏС‰РёР№ РєРѕСЂР°Р±Р»СЊ РїРѕР»РЅРѕСЃС‚СЊСЋ РЅРµРІР°Р»РёРґРµРЅ + СѓСЃРєРѕСЂРµРЅРёРµ Р°Р»РіРѕСЂРёС‚РјР°
+                	//Р°Р»РіРѕСЂРёС‚Рј РјРѕР¶РµС‚ С‚РµСЂРїРµС‚СЊ С‡Р°СЃС‚РёС‡РЅРѕ РІР°Р»РёРґРЅС‹Рµ РєРѕСЂР°Р±Р»Рё?
                     outOfBounds += ship.size;
                 }
             }
             return outOfBounds;
         }
 
-        // Подсчет соприкосновений кораблей
+        // РџРѕРґСЃС‡РµС‚ СЃРѕРїСЂРёРєРѕСЃРЅРѕРІРµРЅРёР№ РєРѕСЂР°Р±Р»РµР№
         private int calculateAdjacentShips() {
             boolean[][] board = new boolean[BOARD_SIZE][BOARD_SIZE];
             int adjacent = 0;
             
-            // Помечаем занятые клетки
+            // РџРѕРјРµС‡Р°РµРј Р·Р°РЅСЏС‚С‹Рµ РєР»РµС‚РєРё
             for (Ship ship : ships) {
                 for (int i = 0; i < ship.size; i++) {
                     int x = ship.isHorizontal ? ship.x + i : ship.x;
                     int y = ship.isHorizontal ? ship.y : ship.y + i;
-                    //защита от ложных клеток и выхода за пределы массива
+                    //Р·Р°С‰РёС‚Р° РѕС‚ Р»РѕР¶РЅС‹С… РєР»РµС‚РѕРє Рё РІС‹С…РѕРґР° Р·Р° РїСЂРµРґРµР»С‹ РјР°СЃСЃРёРІР°
                     if (isWithinBoard(x,y)) {
                         board[x][y] = true;
                     }
                 }
             }
             
-            // Проверяем соседние клетки
+            // РџСЂРѕРІРµСЂСЏРµРј СЃРѕСЃРµРґРЅРёРµ РєР»РµС‚РєРё
             for (Ship ship : ships) {
                 for (int i = 0; i < ship.size; i++) {
                     int x = ship.isHorizontal ? ship.x + i : ship.x;
@@ -135,7 +135,7 @@ public class BattleshipGA {
                             
                             int nx = x + dx;
                             int ny = y + dy;
-                            //для избежания проверки ложных клеток за пределами доски
+                            //РґР»СЏ РёР·Р±РµР¶Р°РЅРёСЏ РїСЂРѕРІРµСЂРєРё Р»РѕР¶РЅС‹С… РєР»РµС‚РѕРє Р·Р° РїСЂРµРґРµР»Р°РјРё РґРѕСЃРєРё
                             if (isWithinBoard(nx,ny)) {
                                 if (board[nx][ny] && !isPartOfShip(ship, nx, ny)) {
                                     adjacent++;
@@ -160,13 +160,13 @@ public class BattleshipGA {
         	return (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE);
         }
 
-        // Мутация особи
+        // РњСѓС‚Р°С†РёСЏ РѕСЃРѕР±Рё
         void mutate() {
             Random rand = new Random();
             
             for (int i = 0; i < ships.size(); i++) {
                 if (rand.nextDouble() < MUTATION_RATE) {
-                    // Заменяем случайный корабль на новый
+                    // Р—Р°РјРµРЅСЏРµРј СЃР»СѓС‡Р°Р№РЅС‹Р№ РєРѕСЂР°Р±Р»СЊ РЅР° РЅРѕРІС‹Р№
                     ships.set(i, createRandomShip(ships.get(i).size));
                 }
             }
@@ -174,11 +174,11 @@ public class BattleshipGA {
         }
         
         void printBoard() {
-            // Создаем и заполняем доску
+            // РЎРѕР·РґР°РµРј Рё Р·Р°РїРѕР»РЅСЏРµРј РґРѕСЃРєСѓ
             char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
-            for (char[] row : board) Arrays.fill(row, '.');  // Пустые клетки
+            for (char[] row : board) Arrays.fill(row, '.');  // РџСѓСЃС‚С‹Рµ РєР»РµС‚РєРё
             
-            // Размещаем корабли (S - ship)
+            // Р Р°Р·РјРµС‰Р°РµРј РєРѕСЂР°Р±Р»Рё (S - ship)
             for (Ship ship : ships) {
                 for (int i = 0; i < ship.size; i++) {
                     int x = ship.isHorizontal ? ship.x + i : ship.x;
@@ -189,16 +189,16 @@ public class BattleshipGA {
                 }
             }
 
-            // Вывод заголовков столбцов (A-J)
+            // Р’С‹РІРѕРґ Р·Р°РіРѕР»РѕРІРєРѕРІ СЃС‚РѕР»Р±С†РѕРІ (A-J)
             System.out.print("   ");
             for (char c = 'A'; c < 'A' + BOARD_SIZE; c++) {
                 System.out.print(c + " ");
             }
             System.out.println();
 
-            // Вывод доски с номерами строк
+            // Р’С‹РІРѕРґ РґРѕСЃРєРё СЃ РЅРѕРјРµСЂР°РјРё СЃС‚СЂРѕРє
             for (int y = 0; y < BOARD_SIZE; y++) {
-                System.out.printf("%2d ", y);  // Номер строки с выравниванием
+                System.out.printf("%2d ", y);  // РќРѕРјРµСЂ СЃС‚СЂРѕРєРё СЃ РІС‹СЂР°РІРЅРёРІР°РЅРёРµРј
                 for (int x = 0; x < BOARD_SIZE; x++) {
                     System.out.print(board[x][y] + " ");
                 }
@@ -207,11 +207,11 @@ public class BattleshipGA {
         }
     }
 
-    // Класс для представления корабля
+    // РљР»Р°СЃСЃ РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РєРѕСЂР°Р±Р»СЏ
     static class Ship {
-        int x, y; // Позиция носа корабля
-        int size; // Размер корабля
-        boolean isHorizontal; // Ориентация
+        int x, y; // РџРѕР·РёС†РёСЏ РЅРѕСЃР° РєРѕСЂР°Р±Р»СЏ
+        int size; // Р Р°Р·РјРµСЂ РєРѕСЂР°Р±Р»СЏ
+        boolean isHorizontal; // РћСЂРёРµРЅС‚Р°С†РёСЏ
 
         Ship(int x, int y, int size, boolean isHorizontal) {
             this.x = x;
@@ -222,29 +222,29 @@ public class BattleshipGA {
     }
 
     public static void main(String[] args) {
-        // Инициализация популяции
+        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРѕРїСѓР»СЏС†РёРё
         List<Individual> population = new ArrayList<>();
         for (int i = 0; i < POPULATION_SIZE; i++) {
             population.add(new Individual());
         }
 
-        // Основной цикл генетического алгоритма
+        // РћСЃРЅРѕРІРЅРѕР№ С†РёРєР» РіРµРЅРµС‚РёС‡РµСЃРєРѕРіРѕ Р°Р»РіРѕСЂРёС‚РјР°
         for (int generation = 0; generation < MAX_GENERATIONS; generation++) {
-            // Сортировка по приспособленности
+            // РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ РїСЂРёСЃРїРѕСЃРѕР±Р»РµРЅРЅРѕСЃС‚Рё
             population.sort(Comparator.comparingInt(ind -> ind.fitness));
 
-            // Проверка на найденное решение
+            // РџСЂРѕРІРµСЂРєР° РЅР° РЅР°Р№РґРµРЅРЅРѕРµ СЂРµС€РµРЅРёРµ
             if (population.get(0).fitness == 0) {
-                System.out.println("Найдено решение в поколении " + generation);
+                System.out.println("РќР°Р№РґРµРЅРѕ СЂРµС€РµРЅРёРµ РІ РїРѕРєРѕР»РµРЅРёРё " + generation);
                 break;
             }
 
-            // Отбор элитных особей
+            // РћС‚Р±РѕСЂ СЌР»РёС‚РЅС‹С… РѕСЃРѕР±РµР№
             List<Individual> newPopulation = new ArrayList<>();
             int eliteCount = (int)(POPULATION_SIZE * ELITISM_RATE);
             newPopulation.addAll(population.subList(0, eliteCount));
 
-            // Заполнение популяции потомками
+            // Р—Р°РїРѕР»РЅРµРЅРёРµ РїРѕРїСѓР»СЏС†РёРё РїРѕС‚РѕРјРєР°РјРё
             while (newPopulation.size() < POPULATION_SIZE) {
                 Individual parent1 = tournamentSelection(population);
                 Individual parent2 = tournamentSelection(population);
@@ -256,14 +256,14 @@ public class BattleshipGA {
             population = newPopulation;
         }
 
-        // Вывод лучшего решения
+        // Р’С‹РІРѕРґ Р»СѓС‡С€РµРіРѕ СЂРµС€РµРЅРёСЏ
         population.sort(Comparator.comparingInt(ind -> ind.fitness));
         Individual best = population.get(0);
-        System.out.println("Лучшая расстановка (штраф: " + best.fitness + ")");
+        System.out.println("Р›СѓС‡С€Р°СЏ СЂР°СЃСЃС‚Р°РЅРѕРІРєР° (С€С‚СЂР°С„: " + best.fitness + ")");
         best.printBoard();
     }
 
-    // Турнирный отбор
+    // РўСѓСЂРЅРёСЂРЅС‹Р№ РѕС‚Р±РѕСЂ
     static Individual tournamentSelection(List<Individual> population) {
         Random rand = new Random();
         Individual best = null;
@@ -285,16 +285,16 @@ public class BattleshipGA {
             Ship p1Ship = parent1.ships.get(i);
             Ship p2Ship = parent2.ships.get(i);
 
-            // Комбинируем параметры от двух родителей
+            // РљРѕРјР±РёРЅРёСЂСѓРµРј РїР°СЂР°РјРµС‚СЂС‹ РѕС‚ РґРІСѓС… СЂРѕРґРёС‚РµР»РµР№
             boolean isHorizontal = rand.nextBoolean() ? p1Ship.isHorizontal : p2Ship.isHorizontal;
             int x = rand.nextBoolean() ? p1Ship.x : p2Ship.x;
             int y = rand.nextBoolean() ? p1Ship.y : p2Ship.y;
 
-            // Гарантируем, что корабль не выйдет за границы поля
+            // Р“Р°СЂР°РЅС‚РёСЂСѓРµРј, С‡С‚Рѕ РєРѕСЂР°Р±Р»СЊ РЅРµ РІС‹Р№РґРµС‚ Р·Р° РіСЂР°РЅРёС†С‹ РїРѕР»СЏ
             if (isHorizontal) {
-                x = Math.min(x, BOARD_SIZE - p1Ship.size); // Корректируем X для горизонтальных
+                x = Math.min(x, BOARD_SIZE - p1Ship.size); // РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј X РґР»СЏ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹С…
             } else {
-                y = Math.min(y, BOARD_SIZE - p1Ship.size); // Корректируем Y для вертикальных
+                y = Math.min(y, BOARD_SIZE - p1Ship.size); // РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј Y РґР»СЏ РІРµСЂС‚РёРєР°Р»СЊРЅС‹С…
             }
 
             childShips.add(new Ship(x, y, p1Ship.size, isHorizontal));
